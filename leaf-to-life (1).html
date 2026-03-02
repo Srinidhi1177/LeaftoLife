@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaf to Life — Siddha Manuscript Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&family=Noto+Sans+Tamil:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0e1510;--bg2:#141c16;--card:#1c2820;--card2:#223028;--border:#2e4035;--accent:#7ab87a;--accent2:#4e8a5e;--glow:rgba(122,184,122,0.18);--text:#e8f0e9;--text2:#9ab89f;--text3:#6a8a6f;--gold:#c9a84c;--gold2:rgba(201,168,76,0.12)}
+  [data-theme="light"]{--bg:#f2ede6;--bg2:#ece5db;--card:#faf6f0;--card2:#f0e9de;--border:#d4c9b8;--accent:#4e7c3e;--accent2:#3a6030;--glow:rgba(78,124,62,0.12);--text:#1a2a1d;--text2:#4a6450;--text3:#7a9480;--gold:#8a6820;--gold2:rgba(138,104,32,0.1)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .4s,color .4s;overflow-x:hidden}
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:14px 24px;background:linear-gradient(to bottom,var(--bg) 50%,transparent)}
+  .lang-toggle{display:flex;background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+  .lang-btn{padding:5px 13px;font-size:12px;font-weight:500;cursor:pointer;background:none;border:none;color:var(--text2);transition:all .2s;font-family:inherit}
+  .lang-btn.active{background:var(--accent);color:#fff}
+  .theme-btn{width:34px;height:34px;border-radius:50%;background:var(--card);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s;color:var(--text2)}
+  .theme-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .page{display:none;min-height:100vh}
+  .page.active{display:flex;flex-direction:column}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  .page.active>*{animation:fadeUp .4s ease both}
+  .page.active>*:nth-child(2){animation-delay:.07s}
+  .page.active>*:nth-child(3){animation-delay:.13s}
+  .page.active>*:nth-child(4){animation-delay:.19s}
+  #page-landing{align-items:center;justify-content:center;text-align:center;padding:80px 24px 48px;position:relative}
+  .bg-tex{display:none}
+  .bg-orb{position:absolute;width:480px;height:480px;background:radial-gradient(circle,var(--glow) 0%,transparent 70%);border-radius:50%;top:45%;left:50%;transform:translate(-50%,-55%);pointer-events:none}
+  .leaf-em{font-size:54px;margin-bottom:18px;animation:float 4s ease-in-out infinite;filter:drop-shadow(0 0 18px var(--glow))}
+  @keyframes float{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-10px) rotate(3deg)}}
+  .app-title{font-family:'Cormorant Garamond',serif;font-size:clamp(50px,9vw,84px);font-weight:300;line-height:1;letter-spacing:-1.5px;background:linear-gradient(135deg,var(--text) 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+  .gold-line{width:56px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:14px auto}
+  .app-sub{font-size:13px;color:var(--text3);max-width:340px;margin:0 auto 6px;font-weight:300;line-height:1.75;letter-spacing:.3px}
+  .ta-sub{font-size:12px;color:var(--gold);margin-bottom:44px;font-family:'Noto Sans Tamil',sans-serif;opacity:.75}
+  .landing-btns{display:flex;flex-direction:column;gap:11px;width:100%;max-width:290px;margin:0 auto}
+  .btn-p{width:100%;padding:13px 28px;border-radius:12px;background:var(--accent2);border:1px solid var(--accent);color:#fff;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.4px;transition:all .25s}
+  .btn-p:hover{background:var(--accent);transform:translateY(-1px);box-shadow:0 8px 24px var(--glow)}
+  .btn-g{width:100%;padding:12px 28px;border-radius:12px;background:transparent;border:1px solid var(--border);color:var(--text2);font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.4px;transition:all .25s}
+  .btn-g:hover{border-color:var(--accent);color:var(--accent)}
+  .ver{margin-top:44px;font-size:11px;color:var(--text3);letter-spacing:2px;text-transform:uppercase}
+  #page-auth{align-items:center;justify-content:center;padding:80px 20px}
+  .auth-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 28px;width:100%;max-width:390px;box-shadow:0 24px 64px rgba(0,0,0,.3)}
+  .back-btn{display:flex;align-items:center;gap:7px;color:var(--text3);font-size:13px;cursor:pointer;margin-bottom:22px;background:none;border:none;font-family:inherit;transition:color .2s}
+  .back-btn:hover{color:var(--accent)}
+  .auth-tabs{display:flex;background:var(--bg2);border-radius:10px;padding:3px;margin-bottom:26px}
+  .a-tab{flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;background:none;border:none;color:var(--text3);font-family:'DM Sans',sans-serif;transition:all .2s}
+  .a-tab.active{background:var(--card2);color:var(--text)}
+  .tab-panel{display:none}.tab-panel.active{display:block}
+  .form-grp{margin-bottom:15px}
+  .form-lbl{font-size:11px;color:var(--text3);margin-bottom:5px;display:block;letter-spacing:.6px}
+  .form-inp{width:100%;padding:10px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;transition:border-color .2s;outline:none}
+  .form-inp:focus{border-color:var(--accent)}
+  .form-inp::placeholder{color:var(--text3)}
+  .form-sel{width:100%;padding:10px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;appearance:none;outline:none;cursor:pointer;transition:border-color .2s}
+  .form-sel:focus{border-color:var(--accent)}
+  .forgot{font-size:12px;color:var(--accent);cursor:pointer;display:block;text-align:right;margin:-6px 0 14px}
+  #page-dashboard{padding:0}
+  .dash-head{padding:60px 22px 24px;background:linear-gradient(to bottom,var(--bg2),transparent)}
+  .dash-greet{font-size:11px;color:var(--text3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:4px}
+  .dash-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300}
+  .action-cards{padding:6px 18px 110px;display:flex;flex-direction:column;gap:13px}
+  .a-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px 18px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+  .a-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .25s}
+  .a-card:hover{border-color:var(--accent);transform:translateX(4px)}
+  .a-card:hover::before{opacity:1}
+  .c-icon{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;background:var(--glow);border:1px solid var(--border)}
+  .c-text{flex:1}.c-title{font-size:14px;font-weight:500;margin-bottom:3px}
+  .c-desc{font-size:11px;color:var(--text3);line-height:1.5}
+  .c-arr{font-size:17px;color:var(--text3)}
+  .bnav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--card);border-top:1px solid var(--border);display:flex;padding:8px 0 14px}
+  .nv{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 0;background:none;border:none;font-family:inherit;transition:color .2s}
+  .nv-icon{font-size:19px;color:var(--text2)}.nv-lbl{font-size:10px;color:var(--text3);letter-spacing:.4px}
+  .nv.active .nv-lbl{color:var(--accent)}.nv.active .nv-icon{color:var(--accent);filter:drop-shadow(0 0 6px var(--accent))}
+  .pg-head{display:flex;align-items:center;gap:13px;padding:62px 20px 20px}
+  .pg-back{width:34px;height:34px;background:var(--card);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--text2);transition:all .2s;flex-shrink:0}
+  .pg-back:hover{color:var(--accent);border-color:var(--accent)}
+  .pg-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300}
+  .pg-sub{font-size:12px;color:var(--text3);padding:0 20px 18px;line-height:1.6}
+  .pg-content{padding:0 18px 110px}
+  .drop-zone{background:var(--card);border:2px dashed var(--border);border-radius:18px;padding:44px 22px;text-align:center;cursor:pointer;transition:all .3s;margin-bottom:16px}
+  .drop-zone:hover,.drop-zone.dov{border-color:var(--accent);background:var(--glow)}
+  .drop-icon{font-size:38px;margin-bottom:12px}
+  .drop-title{font-size:15px;margin-bottom:5px}
+  .drop-hint{font-size:11px;color:var(--text3)}
+  .prev-img{width:100%;border-radius:14px;object-fit:contain;max-height:230px;display:none;margin-bottom:16px}
+  #page-processing{align-items:center;justify-content:center;text-align:center;padding:24px}
+  .proc-ring{width:92px;height:92px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--accent);border-right-color:var(--accent2);animation:spin 1.2s linear infinite;margin-bottom:30px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .proc-title{font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:300;margin-bottom:10px}
+  .proc-step{font-size:13px;color:var(--text3);animation:fstep 2s ease-in-out infinite}
+  @keyframes fstep{0%,100%{opacity:.35}50%{opacity:1}}
+  .proc-dots{display:flex;gap:7px;margin-top:26px;justify-content:center}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--border);animation:dpulse 1.4s ease-in-out infinite}
+  .dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+  @keyframes dpulse{0%,80%,100%{background:var(--border)}40%{background:var(--accent)}}
+  .res-sum{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+  .res-num{font-size:28px;font-weight:500;color:var(--accent);line-height:1}
+  .res-lbl{font-size:11px;color:var(--text3);margin-top:2px}
+  .dis-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:13px;cursor:pointer;transition:all .25s}
+  .dis-card:hover{border-color:var(--accent)}
+  .dis-name{font-size:15px;font-weight:500;margin-bottom:4px}
+  .dis-ta{font-family:'Noto Sans Tamil',sans-serif;font-size:12px;color:var(--gold);margin-bottom:9px}
+  .conf-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:5px}
+  .conf-bar{height:3px;background:var(--border);border-radius:2px;margin-bottom:9px;overflow:hidden}
+  .conf-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:2px}
+  .tags{display:flex;gap:7px;flex-wrap:wrap}
+  .tag{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:3px 9px;font-size:10px;color:var(--text2)}
+  .tag.g{border-color:var(--gold2);color:var(--gold);background:var(--gold2)}
+  .consult-btn{width:100%;padding:14px;border-radius:14px;margin-top:8px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;color:#fff;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .2s;letter-spacing:.4px}
+  .consult-btn:hover{opacity:.88}
+  #page-voice{align-items:center;justify-content:flex-start;padding-top:0}
+  .voice-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 22px 110px;text-align:center}
+  .mic-wrap{position:relative;margin-bottom:36px}
+  .m-ring{position:absolute;inset:-18px;border-radius:50%;border:2px solid var(--accent);opacity:0}
+  .m-ring2{position:absolute;inset:-36px;border-radius:50%;border:1px solid var(--accent);opacity:0}
+  .m-ring.rec{animation:mring 1.5s ease-out infinite}
+  .m-ring2.rec{animation:mring 1.5s .5s ease-out infinite}
+  @keyframes mring{0%{transform:scale(.9);opacity:.55}100%{transform:scale(1.45);opacity:0}}
+  .mic-btn{width:96px;height:96px;border-radius:50%;background:var(--card);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:34px;cursor:pointer;transition:all .3s;position:relative;z-index:1}
+  .mic-btn.rec{background:var(--accent2);border-color:var(--accent);box-shadow:0 0 30px var(--glow);animation:mpulse .8s ease-in-out infinite}
+  @keyframes mpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  .waveform{display:flex;align-items:center;gap:4px;height:38px;margin:18px 0;justify-content:center;opacity:0;transition:opacity .3s}
+  .waveform.on{opacity:1}
+  .wbar{width:4px;background:var(--accent);border-radius:2px;animation:wv .8s ease-in-out infinite}
+  .wbar:nth-child(2){animation-delay:.1s}.wbar:nth-child(3){animation-delay:.2s}.wbar:nth-child(4){animation-delay:.3s}.wbar:nth-child(5){animation-delay:.4s}.wbar:nth-child(6){animation-delay:.3s}.wbar:nth-child(7){animation-delay:.2s}.wbar:nth-child(8){animation-delay:.1s}
+  @keyframes wv{0%,100%{height:7px}50%{height:30px}}
+  .trans-box{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:15px 17px;width:100%;max-width:340px;min-height:78px;text-align:left;font-size:13px;line-height:1.75;color:var(--text2);margin-bottom:18px;font-style:italic}
+  .doc-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:17px 18px;margin-bottom:13px}
+  .doc-head{display:flex;align-items:center;gap:13px;margin-bottom:11px}
+  .doc-av{width:44px;height:44px;border-radius:12px;background:var(--glow);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+  .doc-name{font-size:14px;font-weight:500;margin-bottom:1px}
+  .doc-clinic{font-size:11px;color:var(--text3)}
+  .doc-meta{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
+  .doc-acts{display:flex;gap:7px}
+  .act{flex:1;padding:8px;border-radius:10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .2s}
+  .act.pri{background:var(--accent2);border:1px solid var(--accent);color:#fff}
+  .act.sec{background:var(--bg2);border:1px solid var(--border);color:var(--text2)}
+  .set-grp{margin-bottom:26px}
+  .set-lbl{font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;padding:0 2px}
+  .set-row{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:15px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;cursor:pointer;transition:border-color .2s}
+  .set-row:hover{border-color:var(--accent)}
+  .set-row-lbl{font-size:13px}.set-row-val{font-size:12px;color:var(--text3)}
+  .tgl{width:42px;height:22px;background:var(--border);border-radius:11px;position:relative;cursor:pointer;transition:background .3s}
+  .tgl.on{background:var(--accent2)}.tgl-k{position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .3s}
+  .tgl.on .tgl-k{transform:translateX(20px)}
+  .sec-title{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('ta')">த</button>
+  </div>
+  <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">☽</button>
+</div>
+
+<!-- LANDING -->
+<div class="page active" id="page-landing">
+  <div class="bg-tex"></div><div class="bg-orb"></div>
+  <div class="leaf-em">🌿</div>
+  <h1 class="app-title" data-en="Leaf to Life" data-ta="இலை முதல் வாழ்க்கை">Leaf to Life</h1>
+  <div class="gold-line"></div>
+  <p class="app-sub" data-en="Preserving & digitizing ancient Siddha palm-leaf manuscripts through artificial intelligence" data-ta="செயற்கை நுண்ணறிவு மூலம் சித்த பனையோலை சுவடிகளை பாதுகாத்தல்">Preserving &amp; digitizing ancient Siddha palm-leaf manuscripts through artificial intelligence</p>
+  <p class="ta-sub">சித்த மருத்துவம் · Tamil AI · Manuscript Intelligence</p>
+  <div class="landing-btns">
+    <button class="btn-p" onclick="showPage('page-auth')" data-en="Login / Sign Up" data-ta="உள்நுழை / பதிவு செய்">Login / Sign Up</button>
+    <button class="btn-g" onclick="guestEntry()" data-en="Continue as Guest" data-ta="விருந்தினராக தொடரவும்">Continue as Guest</button>
+  </div>
+  <p class="ver">Beta v0.9 · Siddha AI Platform</p>
+</div>
+
+<!-- AUTH -->
+<div class="page" id="page-auth">
+  <div class="auth-card">
+    <button class="back-btn" onclick="showPage('page-landing')">← Back</button>
+    <div class="auth-tabs">
+      <button class="a-tab active" onclick="switchTab('login',this)">Login</button>
+      <button class="a-tab" onclick="switchTab('signup',this)">Sign Up</button>
+    </div>
+    <div class="tab-panel active" id="tab-login">
+      <div class="form-grp"><label class="form-lbl">EMAIL OR PHONE</label><input class="form-inp" type="text" placeholder="you@example.com" /></div>
+      <div class="form-grp"><label class="form-lbl">PASSWORD</label><input class="form-inp" type="password" placeholder="••••••••" /></div>
+      <a href="#" class="forgot">Forgot password?</a>
+      <button class="btn-p" onclick="guestEntry()">Login</button>
+    </div>
+    <div class="tab-panel" id="tab-signup">
+      <div class="form-grp"><label class="form-lbl">FULL NAME</label><input class="form-inp" type="text" placeholder="Your name" /></div>
+      <div class="form-grp"><label class="form-lbl">EMAIL OR PHONE</label><input class="form-inp" type="text" placeholder="you@example.com" /></div>
+      <div class="form-grp"><label class="form-lbl">PASSWORD</label><input class="form-inp" type="password" placeholder="••••••••" /></div>
+      <div class="form-grp"><label class="form-lbl">CONFIRM PASSWORD</label><input class="form-inp" type="password" placeholder="••••••••" /></div>
+      <div class="form-grp">
+        <label class="form-lbl">ROLE <span style="color:var(--text3)">(optional)</span></label>
+        <select class="form-sel"><option value="">Select role…</option><option>Patient</option><option>Student</option><option>Siddha Practitioner</option></select>
+      </div>
+      <button class="btn-p" onclick="guestEntry()" style="margin-top:8px">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page" id="page-dashboard">
+  <div class="dash-head">
+    <p class="dash-greet" data-en="Welcome back" data-ta="மீண்டும் வரவேற்கிறோம்">Welcome back</p>
+    <h2 class="dash-title" data-en="What would you like to do?" data-ta="நீங்கள் என்ன செய்ய விரும்புகிறீர்கள்?">What would you like to do?</h2>
+  </div>
+  <div class="action-cards">
+    <div class="a-card" onclick="navTo('page-upload','nav-upload')">
+      <div class="c-icon">📜</div>
+      <div class="c-text">
+        <div class="c-title" data-en="Upload Manuscript" data-ta="சுவடியை பதிவேற்றவும்">Upload Manuscript</div>
+        <div class="c-desc" data-en="Digitize a palm-leaf script with Tamil OCR" data-ta="தமிழ் OCR மூலம் பனையோலை சுவடியை டிஜிட்டல் ஆக்கவும்">Digitize a palm-leaf script with Tamil OCR</div>
+      </div><span class="c-arr">›</span>
+    </div>
+    <div class="a-card" onclick="navTo('page-voice','nav-voice')">
+      <div class="c-icon">🎙️</div>
+      <div class="c-text">
+        <div class="c-title" data-en="Speak Symptoms" data-ta="அறிகுறிகளை பேசவும்">Speak Symptoms</div>
+        <div class="c-desc" data-en="Record symptoms in Tamil or English for AI analysis" data-ta="AI பகுப்பாய்வுக்கு தமிழில் அறிகுறிகளை பதிவு செய்யவும்">Record symptoms in Tamil or English for AI analysis</div>
+      </div><span class="c-arr">›</span>
+    </div>
+    <div class="a-card" onclick="navTo('page-type','nav-home')">
+      <div class="c-icon">✍️</div>
+      <div class="c-text">
+        <div class="c-title" data-en="Type Symptoms" data-ta="அறிகுறிகளை தட்டச்சு செய்யவும்">Type Symptoms</div>
+        <div class="c-desc" data-en="Describe your condition and get matched remedies" data-ta="உங்கள் நிலையை விவரிக்கவும், தீர்வுகளை பெறவும்">Describe your condition and get matched remedies</div>
+      </div><span class="c-arr">›</span>
+    </div>
+    <div class="a-card" onclick="navTo('page-doctors','nav-saved')">
+      <div class="c-icon">🏥</div>
+      <div class="c-text">
+        <div class="c-title" data-en="Find Siddha Doctor" data-ta="சித்த மருத்துவரை கண்டுபிடிக்கவும்">Find Siddha Doctor</div>
+        <div class="c-desc" data-en="Locate and book certified Siddha practitioners" data-ta="சித்த மருத்துவர்களை கண்டுபிடித்து முன்பதிவு செய்யவும்">Locate and book certified Siddha practitioners</div>
+      </div><span class="c-arr">›</span>
+    </div>
+  </div>
+</div>
+
+<!-- UPLOAD -->
+<div class="page" id="page-upload">
+  <div class="pg-head">
+    <button class="pg-back" onclick="navTo('page-dashboard','nav-home')">←</button>
+    <h2 class="pg-title" data-en="Upload Manuscript" data-ta="சுவடியை பதிவேற்றவும்">Upload Manuscript</h2>
+  </div>
+  <p class="pg-sub" data-en="Select or drag a palm-leaf manuscript image for OCR processing" data-ta="OCR செயலாக்கத்திற்கு பனையோலை சுவடி படத்தை தேர்வு செய்யுங்கள்">Select or drag a palm-leaf manuscript image for OCR processing</p>
+  <div class="pg-content">
+    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('finput').click()" ondragover="event.preventDefault();this.classList.add('dov')" ondragleave="this.classList.remove('dov')">
+      <div class="drop-icon">🍃</div>
+      <div class="drop-title" data-en="Drop your manuscript here" data-ta="உங்கள் சுவடியை இங்கே இடுங்கள்">Drop your manuscript here</div>
+      <div class="drop-hint" data-en="JPG, PNG, TIFF · Max 10 MB" data-ta="JPG, PNG, TIFF · அதிகபட்சம் 10 MB">JPG, PNG, TIFF · Max 10 MB</div>
+      <input type="file" id="finput" accept="image/*" style="display:none" onchange="handleFile(event)" />
+    </div>
+    <img class="prev-img" id="prev-img" alt="Preview" />
+    <button class="btn-p" id="proc-btn" style="display:none;margin-bottom:20px" onclick="startProc()">Process Manuscript →</button>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:15px 16px">
+      <div class="sec-title" data-en="RECENT MANUSCRIPTS" data-ta="சமீபத்திய சுவடிகள்">RECENT MANUSCRIPTS</div>
+      <div style="display:flex;gap:9px;overflow-x:auto;padding-bottom:4px">
+        <div style="flex-shrink:0;width:76px;height:76px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px">📜</div>
+        <div style="flex-shrink:0;width:76px;height:76px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px">🌿</div>
+        <div style="flex-shrink:0;width:76px;height:76px;background:var(--bg2);border:1px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--text3)">+</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROCESSING -->
+<div class="page" id="page-processing">
+  <div class="proc-ring"></div>
+  <div class="proc-title" id="proc-title">Reading Manuscript…</div>
+  <div class="proc-step" id="proc-step">Enhancing contrast and removing noise</div>
+  <div class="proc-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+</div>
+
+<!-- RESULTS -->
+<div class="page" id="page-results">
+  <div class="pg-head">
+    <button class="pg-back" onclick="navTo('page-dashboard','nav-home')">←</button>
+    <h2 class="pg-title" data-en="Analysis Results" data-ta="பகுப்பாய்வு முடிவுகள்">Analysis Results</h2>
+  </div>
+  <div class="pg-content">
+    <div class="res-sum">
+      <div><div class="res-num">3</div><div class="res-lbl" data-en="Possible conditions found" data-ta="சாத்தியமான நிலைமைகள்">Possible conditions found</div></div>
+      <span class="tag g">High Confidence</span>
+    </div>
+    <div class="dis-card">
+      <div class="dis-name" data-en="Vātham (Wind Disorder)" data-ta="வாதம் (காற்று நோய்)">Vātham (Wind Disorder)</div>
+      <div class="dis-ta">வாதம் — Ref: PS·4·218</div>
+      <div class="conf-row"><span>Confidence</span><span>92%</span></div>
+      <div class="conf-bar"><div class="conf-fill" style="width:92%"></div></div>
+      <div class="tags"><span class="tag">Joint pain</span><span class="tag">Fatigue</span><span class="tag">Numbness</span><span class="tag g">📜 3 refs</span></div>
+    </div>
+    <div class="dis-card">
+      <div class="dis-name" data-en="Pittham (Bile Disorder)" data-ta="பித்தம் (பித்த நோய்)">Pittham (Bile Disorder)</div>
+      <div class="dis-ta">பித்தம் — Ref: TB·2·91</div>
+      <div class="conf-row"><span>Confidence</span><span>74%</span></div>
+      <div class="conf-bar"><div class="conf-fill" style="width:74%"></div></div>
+      <div class="tags"><span class="tag">Fever</span><span class="tag">Irritability</span><span class="tag g">📜 1 ref</span></div>
+    </div>
+    <div class="dis-card">
+      <div class="dis-name" data-en="Kapham (Phlegm Disorder)" data-ta="கபம் (கபநோய்)">Kapham (Phlegm Disorder)</div>
+      <div class="dis-ta">கபம் — Ref: AR·7·334</div>
+      <div class="conf-row"><span>Confidence</span><span>58%</span></div>
+      <div class="conf-bar"><div class="conf-fill" style="width:58%"></div></div>
+      <div class="tags"><span class="tag">Congestion</span><span class="tag">Lethargy</span><span class="tag g">📜 2 refs</span></div>
+    </div>
+    <button class="consult-btn" onclick="navTo('page-doctors','nav-saved')">🏥 Consult Nearby Siddha Doctor</button>
+  </div>
+</div>
+
+<!-- VOICE -->
+<div class="page" id="page-voice">
+  <div class="pg-head">
+    <button class="pg-back" onclick="navTo('page-dashboard','nav-home')">←</button>
+    <h2 class="pg-title" data-en="Speak Symptoms" data-ta="அறிகுறிகளை பேசவும்">Speak Symptoms</h2>
+  </div>
+  <div class="voice-body">
+    <div class="mic-wrap" onclick="toggleMic()">
+      <div class="m-ring" id="mring"></div>
+      <div class="m-ring2" id="mring2"></div>
+      <div class="mic-btn" id="mbtn">🎙️</div>
+    </div>
+    <p id="mic-status" style="font-size:13px;color:var(--text3);margin-bottom:18px">Tap to start recording</p>
+    <div class="waveform" id="waveform">
+      <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
+      <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
+    </div>
+    <div class="trans-box" id="trans-box">Your transcribed symptoms will appear here…</div>
+    <button class="btn-p" id="analyze-btn" style="max-width:300px;opacity:.45;pointer-events:none" onclick="startProc()">Analyze Symptoms →</button>
+  </div>
+</div>
+
+<!-- TYPE -->
+<div class="page" id="page-type">
+  <div class="pg-head">
+    <button class="pg-back" onclick="navTo('page-dashboard','nav-home')">←</button>
+    <h2 class="pg-title" data-en="Type Symptoms" data-ta="அறிகுறிகளை தட்டச்சு செய்யவும்">Type Symptoms</h2>
+  </div>
+  <p class="pg-sub" data-en="Describe your symptoms in Tamil or English" data-ta="தமிழ் அல்லது ஆங்கிலத்தில் அறிகுறிகளை விவரிக்கவும்">Describe your symptoms in Tamil or English</p>
+  <div class="pg-content">
+    <div class="form-grp"><label class="form-lbl">SYMPTOMS</label><textarea class="form-inp" rows="5" placeholder="e.g. joint pain, fatigue, loss of appetite…" style="resize:none;line-height:1.6"></textarea></div>
+    <div class="form-grp"><label class="form-lbl">DURATION</label><select class="form-sel"><option>Less than a week</option><option>1–4 weeks</option><option>1–3 months</option><option>Chronic (3+ months)</option></select></div>
+    <div class="form-grp"><label class="form-lbl">AGE &amp; SEX (optional)</label><input class="form-inp" type="text" placeholder="e.g. 35 Female" /></div>
+    <button class="btn-p" onclick="startProc()">Analyze →</button>
+  </div>
+</div>
+
+<!-- DOCTORS -->
+<div class="page" id="page-doctors">
+  <div class="pg-head">
+    <button class="pg-back" onclick="navTo('page-dashboard','nav-home')">←</button>
+    <h2 class="pg-title" data-en="Nearby Siddha Doctors" data-ta="அருகிலுள்ள சித்த மருத்துவர்கள்">Nearby Siddha Doctors</h2>
+  </div>
+  <p class="pg-sub" data-en="Showing results within 10 km · Chennai, TN" data-ta="10 கி.மீ. உள்ளே · சென்னை, தமிழ்நாடு">Showing results within 10 km · Chennai, TN</p>
+  <div class="pg-content">
+    <div class="doc-card">
+      <div class="doc-head"><div class="doc-av">👨‍⚕️</div><div><div class="doc-name">Dr. Murugesan S.</div><div class="doc-clinic">Siddha Kalai Clinic, Mylapore</div></div></div>
+      <div class="doc-meta"><span class="tag">⭐ 4.8</span><span class="tag">📍 1.2 km</span><span class="tag" style="color:#6dcc7a;border-color:#2a5a36">● Available today</span></div>
+      <div class="doc-acts"><button class="act sec" onclick="openCall('Dr. Murugesan S.','👨‍⚕️','+91 98400 12345')">📞 Call</button><button class="act sec" onclick="openMessage('Dr. Murugesan S.','👨‍⚕️')">💬 Message</button><button class="act pri" onclick="openBooking('Dr. Murugesan S.','Siddha Kalai Clinic, Mylapore','👨‍⚕️','today')">Book</button></div>
+    </div>
+    <div class="doc-card">
+      <div class="doc-head"><div class="doc-av">👩‍⚕️</div><div><div class="doc-name">Dr. Vijayalakshmi R.</div><div class="doc-clinic">Ancient Healing Centre, T. Nagar</div></div></div>
+      <div class="doc-meta"><span class="tag">⭐ 4.6</span><span class="tag">📍 3.4 km</span><span class="tag" style="color:#f0a060;border-color:#5a3a20">● Tomorrow</span></div>
+      <div class="doc-acts"><button class="act sec" onclick="openCall('Dr. Vijayalakshmi R.','👩‍⚕️','+91 94440 67890')">📞 Call</button><button class="act sec" onclick="openMessage('Dr. Vijayalakshmi R.','👩‍⚕️')">💬 Message</button><button class="act pri" onclick="openBooking('Dr. Vijayalakshmi R.','Ancient Healing Centre, T. Nagar','👩‍⚕️','tomorrow')">Book</button></div>
+    </div>
+    <div class="doc-card">
+      <div class="doc-head"><div class="doc-av">👨‍⚕️</div><div><div class="doc-name">Dr. Anbarasan K.</div><div class="doc-clinic">Vaidya Siddha Hospital, Adyar</div></div></div>
+      <div class="doc-meta"><span class="tag">⭐ 4.9</span><span class="tag">📍 5.7 km</span><span class="tag" style="color:#6dcc7a;border-color:#2a5a36">● Available today</span></div>
+      <div class="doc-acts"><button class="act sec" onclick="openCall('Dr. Anbarasan K.','👨‍⚕️','+91 93300 54321')">📞 Call</button><button class="act sec" onclick="openMessage('Dr. Anbarasan K.','👨‍⚕️')">💬 Message</button><button class="act pri" onclick="openBooking('Dr. Anbarasan K.','Vaidya Siddha Hospital, Adyar','👨‍⚕️','today')">Book</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <div class="pg-head"><h2 class="pg-title" data-en="Settings" data-ta="அமைப்புகள்">Settings</h2></div>
+  <div class="pg-content">
+    <div class="set-grp">
+      <div class="set-lbl">PREFERENCES</div>
+      <div class="set-row" onclick="setLang(lang==='en'?'ta':'en')">
+        <span class="set-row-lbl" data-en="Language" data-ta="மொழி">Language</span>
+        <span class="set-row-val" id="lang-val">English</span>
+      </div>
+      <div class="set-row" onclick="toggleTheme()">
+        <span class="set-row-lbl" data-en="Dark Mode" data-ta="இருண்ட பயன்முறை">Dark Mode</span>
+        <div class="tgl on" id="tgl-theme"><div class="tgl-k"></div></div>
+      </div>
+    </div>
+    <div class="set-grp">
+      <div class="set-lbl">ACCOUNT</div>
+      <div class="set-row"><span class="set-row-lbl" data-en="Profile" data-ta="சுயவிவரம்">Profile</span><span class="set-row-val" data-en="Guest" data-ta="விருந்தினர்">Guest</span></div>
+      <div class="set-row"><span class="set-row-lbl">Notifications</span><span class="set-row-val">›</span></div>
+    </div>
+    <div class="set-grp">
+      <div class="set-lbl">ABOUT</div>
+      <div class="set-row"><span class="set-row-lbl">Version</span><span class="set-row-val">Beta 0.9</span></div>
+      <div class="set-row"><span class="set-row-lbl">Privacy Policy</span><span class="set-row-val">›</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav" id="bnav" style="display:none">
+  <button class="nv active" id="nav-home" onclick="navTo('page-dashboard','nav-home')">
+    <span class="nv-icon">⌂</span><span class="nv-lbl" data-en="Home" data-ta="முகப்பு">Home</span>
+  </button>
+  <button class="nv" id="nav-upload" onclick="navTo('page-upload','nav-upload')">
+    <span class="nv-icon">⬆</span><span class="nv-lbl" data-en="Upload" data-ta="பதிவேற்று">Upload</span>
+  </button>
+  <button class="nv" id="nav-voice" onclick="navTo('page-voice','nav-voice')">
+    <span class="nv-icon">🎙</span><span class="nv-lbl" data-en="Voice" data-ta="குரல்">Voice</span>
+  </button>
+  <button class="nv" id="nav-saved" onclick="navTo('page-results','nav-saved')">
+    <span class="nv-icon">◈</span><span class="nv-lbl" data-en="Saved" data-ta="சேமித்தவை">Saved</span>
+  </button>
+  <button class="nv" id="nav-settings" onclick="navTo('page-settings','nav-settings')">
+    <span class="nv-icon">⚙</span><span class="nv-lbl" data-en="Settings" data-ta="அமைப்பு">Settings</span>
+  </button>
+</nav>
+
+<!-- CALL MODAL -->
+<div id="call-overlay" style="display:none;position:fixed;inset:0;z-index:210;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center" onclick="closeCallOutside(event)">
+  <div id="call-sheet" style="background:var(--card);border-radius:28px 28px 0 0;border-top:1px solid var(--border);width:100%;padding:28px 24px 40px;text-align:center;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,1,.6,1)">
+    <div style="width:38px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 26px"></div>
+    <div id="call-av" style="font-size:52px;margin-bottom:14px;animation:float 3s ease-in-out infinite"></div>
+    <div style="font-size:11px;color:var(--text3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px">Calling</div>
+    <div id="call-name" style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;margin-bottom:6px;color:var(--text)"></div>
+    <div id="call-number" style="font-size:14px;color:var(--accent);letter-spacing:1px;margin-bottom:32px"></div>
+
+    <!-- Animated call rings -->
+    <div style="position:relative;width:90px;height:90px;margin:0 auto 32px">
+      <div class="call-ring r1"></div>
+      <div class="call-ring r2"></div>
+      <div class="call-ring r3"></div>
+      <div style="position:relative;z-index:2;width:90px;height:90px;border-radius:50%;background:var(--accent2);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:28px">📞</div>
+    </div>
+
+    <div id="call-status" style="font-size:13px;color:var(--text3);margin-bottom:32px;animation:fstep 1.8s ease-in-out infinite">Connecting…</div>
+
+    <div style="display:flex;justify-content:center;gap:20px">
+      <div style="text-align:center;cursor:pointer" onclick="toggleMute(this)">
+        <div id="mute-btn" style="width:54px;height:54px;border-radius:50%;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 6px;transition:all .2s">🔇</div>
+        <div style="font-size:10px;color:var(--text3)">Mute</div>
+      </div>
+      <div style="text-align:center;cursor:pointer" onclick="endCall()">
+        <div style="width:64px;height:64px;border-radius:50%;background:#c0392b;border:2px solid #e74c3c;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 6px;box-shadow:0 4px 20px rgba(192,57,43,0.4)">📵</div>
+        <div style="font-size:10px;color:var(--text3)">End</div>
+      </div>
+      <div style="text-align:center;cursor:pointer" onclick="toggleSpeaker(this)">
+        <div id="spk-btn" style="width:54px;height:54px;border-radius:50%;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 6px;transition:all .2s">🔊</div>
+        <div style="font-size:10px;color:var(--text3)">Speaker</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MESSAGE MODAL -->
+<div id="msg-overlay" style="display:none;position:fixed;inset:0;z-index:210;background:var(--bg);flex-direction:column">
+  <!-- Chat header -->
+  <div style="display:flex;align-items:center;gap:13px;padding:52px 18px 14px;background:var(--card);border-bottom:1px solid var(--border);flex-shrink:0">
+    <button onclick="closeMessage()" style="width:34px;height:34px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;cursor:pointer;color:var(--text2);font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0">←</button>
+    <div id="msg-av" style="font-size:26px;width:40px;height:40px;border-radius:12px;background:var(--glow);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
+    <div style="flex:1">
+      <div id="msg-name" style="font-size:14px;font-weight:500;color:var(--text)"></div>
+      <div id="msg-online" style="font-size:11px;color:#6dcc7a">● Online</div>
+    </div>
+    <div style="font-size:18px;cursor:pointer;color:var(--text3)">📞</div>
+  </div>
+
+  <!-- Messages area -->
+  <div id="chat-messages" style="flex:1;overflow-y:auto;padding:16px 16px 8px;display:flex;flex-direction:column;gap:10px">
+    <!-- Auto welcome message -->
+    <div style="text-align:center;font-size:10px;color:var(--text3);letter-spacing:.5px;padding:8px 0">Today</div>
+    <div class="msg-bubble doc-bubble">
+      <span id="chat-welcome"></span>
+    </div>
+  </div>
+
+  <!-- Quick replies -->
+  <div id="quick-replies" style="padding:8px 14px;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;flex-shrink:0">
+    <div class="qr-chip" onclick="sendQuickReply(this)">What are your timings?</div>
+    <div class="qr-chip" onclick="sendQuickReply(this)">Do you do home visits?</div>
+    <div class="qr-chip" onclick="sendQuickReply(this)">What is the consultation fee?</div>
+    <div class="qr-chip" onclick="sendQuickReply(this)">Is video consultation available?</div>
+  </div>
+
+  <!-- Input bar -->
+  <div style="display:flex;align-items:center;gap:10px;padding:10px 14px 28px;background:var(--card);border-top:1px solid var(--border);flex-shrink:0">
+    <input id="msg-input" type="text" placeholder="Type a message…" style="flex:1;padding:11px 15px;background:var(--bg2);border:1px solid var(--border);border-radius:22px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .2s" onkeydown="if(event.key==='Enter')sendMessage()" oninput="toggleSendBtn()">
+    <button id="send-btn" onclick="sendMessage()" style="width:40px;height:40px;border-radius:50%;background:var(--accent2);border:1px solid var(--accent);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:.45;pointer-events:none;transition:all .2s;flex-shrink:0">➤</button>
+  </div>
+</div>
+
+<style>
+  .call-ring{position:absolute;inset:0;border-radius:50%;border:2px solid var(--accent);animation:callring 2s ease-out infinite}
+  .r1{animation-delay:0s}.r2{animation-delay:.6s}.r3{animation-delay:1.2s}
+  @keyframes callring{0%{transform:scale(1);opacity:.6}100%{transform:scale(2.2);opacity:0}}
+  .msg-bubble{max-width:75%;padding:10px 14px;border-radius:18px;font-size:13px;line-height:1.6;word-break:break-word}
+  .doc-bubble{background:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px;align-self:flex-start;color:var(--text)}
+  .user-bubble{background:var(--accent2);border:1px solid var(--accent);border-bottom-right-radius:4px;align-self:flex-end;color:#fff}
+  .msg-time{font-size:9px;opacity:.6;margin-top:4px}
+  .qr-chip{flex-shrink:0;padding:7px 13px;border-radius:16px;border:1px solid var(--border);background:var(--card);font-size:11px;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .2s}
+  .qr-chip:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+
+<script>
+// -------- CALL --------
+let callMuted=false, callSpeaker=false, callTimer=null;
+function openCall(name, av, number){
+  document.getElementById('call-name').textContent=name;
+  document.getElementById('call-av').textContent=av;
+  document.getElementById('call-number').textContent=number;
+  document.getElementById('call-status').textContent='Connecting…';
+  callMuted=false; callSpeaker=false;
+  document.getElementById('mute-btn').style.background='var(--bg2)';
+  document.getElementById('spk-btn').style.background='var(--bg2)';
+
+  const overlay=document.getElementById('call-overlay');
+  const sheet=document.getElementById('call-sheet');
+  overlay.style.display='flex';
+  requestAnimationFrame(()=>{ sheet.style.transform='translateY(0)'; });
+
+  // Simulate connecting → ringing → answered
+  setTimeout(()=>{ document.getElementById('call-status').textContent='Ringing…'; },1500);
+  callTimer=setTimeout(()=>{ document.getElementById('call-status').textContent='Call connected · 00:00'; startCallTimer(); },3500);
+}
+let callSecs=0, callTick=null;
+function startCallTimer(){
+  callSecs=0;
+  callTick=setInterval(()=>{
+    callSecs++;
+    const m=String(Math.floor(callSecs/60)).padStart(2,'0');
+    const s=String(callSecs%60).padStart(2,'0');
+    const st=document.getElementById('call-status');
+    if(st) st.textContent=`Call connected · ${m}:${s}`;
+  },1000);
+}
+function endCall(){
+  clearTimeout(callTimer); clearInterval(callTick);
+  document.getElementById('call-status').textContent='Call ended';
+  const sheet=document.getElementById('call-sheet');
+  setTimeout(()=>{
+    sheet.style.transform='translateY(100%)';
+    setTimeout(()=>{ document.getElementById('call-overlay').style.display='none'; },350);
+  },800);
+}
+function closeCallOutside(e){ if(e.target===document.getElementById('call-overlay')) endCall(); }
+function toggleMute(el){
+  callMuted=!callMuted;
+  document.getElementById('mute-btn').style.background=callMuted?'var(--accent2)':'var(--bg2)';
+}
+function toggleSpeaker(el){
+  callSpeaker=!callSpeaker;
+  document.getElementById('spk-btn').style.background=callSpeaker?'var(--accent2)':'var(--bg2)';
+}
+
+// -------- MESSAGE --------
+const DOC_REPLIES={
+  'What are your timings?':'My clinic timings are 9 AM – 1 PM and 4 PM – 7 PM, Monday to Saturday. Sunday by appointment only.',
+  'Do you do home visits?':'Yes, I do home visits for elderly or bedridden patients within 5 km. Please book in advance.',
+  'What is the consultation fee?':'Consultation fee is ₹300 for first visit and ₹200 for follow-ups. Medicines are charged separately.',
+  'Is video consultation available?':'Yes, video consultations are available via the app. You can book a slot directly through the Book option.'
+};
+let msgDoctor='';
+function openMessage(name, av){
+  msgDoctor=name;
+  document.getElementById('msg-name').textContent=name;
+  document.getElementById('msg-av').textContent=av;
+  document.getElementById('chat-welcome').textContent=`Hello! I'm ${name}. How can I help you today?`;
+  // Reset chat
+  const chat=document.getElementById('chat-messages');
+  chat.innerHTML=`<div style="text-align:center;font-size:10px;color:var(--text3);letter-spacing:.5px;padding:8px 0">Today</div><div class="msg-bubble doc-bubble"><span id="chat-welcome">Hello! I'm ${name}. How can I help you today?</span><div class="msg-time">${getTime()}</div></div>`;
+  document.getElementById('msg-input').value='';
+  toggleSendBtn();
+  const overlay=document.getElementById('msg-overlay');
+  overlay.style.display='flex';
+  overlay.style.flexDirection='column';
+  overlay.style.animation='fadeUp .3s ease';
+}
+function closeMessage(){
+  document.getElementById('msg-overlay').style.display='none';
+}
+function getTime(){
+  const d=new Date();
+  return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+}
+function toggleSendBtn(){
+  const val=document.getElementById('msg-input').value.trim();
+  const btn=document.getElementById('send-btn');
+  btn.style.opacity=val?'1':'0.45';
+  btn.style.pointerEvents=val?'auto':'none';
+}
+function sendMessage(){
+  const input=document.getElementById('msg-input');
+  const text=input.value.trim();
+  if(!text)return;
+  appendMsg(text,'user');
+  input.value=''; toggleSendBtn();
+  // Hide quick replies after first user message
+  document.getElementById('quick-replies').style.display='none';
+  // Auto-reply after delay
+  setTimeout(()=>{
+    const reply=DOC_REPLIES[text]||`Thank you for your message. I'll get back to you shortly. For urgent matters, please call or book an appointment.`;
+    appendMsg(reply,'doc');
+  },1200);
+}
+function sendQuickReply(el){
+  const text=el.textContent;
+  document.getElementById('msg-input').value=text;
+  sendMessage();
+}
+function appendMsg(text,from){
+  const chat=document.getElementById('chat-messages');
+  const div=document.createElement('div');
+  div.className='msg-bubble '+(from==='user'?'user-bubble':'doc-bubble');
+  div.innerHTML=`${text}<div class="msg-time" style="text-align:${from==='user'?'right':'left'}">${getTime()}</div>`;
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+</script>
+
+<!-- BOOKING MODAL -->
+<div id="booking-overlay" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)" onclick="closeBookingOutside(event)">
+  <div id="booking-sheet" style="position:absolute;bottom:0;left:0;right:0;background:var(--card);border-radius:24px 24px 0 0;border-top:1px solid var(--border);max-height:92vh;overflow-y:auto;padding:0 0 32px;transition:transform .35s cubic-bezier(.32,1,.6,1);transform:translateY(100%)">
+
+    <!-- Handle -->
+    <div style="display:flex;justify-content:center;padding:14px 0 6px"><div style="width:38px;height:4px;border-radius:2px;background:var(--border)"></div></div>
+
+    <!-- Step 1: Pick date & time -->
+    <div id="book-step1">
+      <div style="padding:6px 20px 18px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--border)">
+        <div id="book-av" style="width:46px;height:46px;border-radius:12px;background:var(--glow);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0"></div>
+        <div>
+          <div id="book-name" style="font-size:15px;font-weight:500;color:var(--text)"></div>
+          <div id="book-clinic" style="font-size:11px;color:var(--text3);margin-top:2px"></div>
+        </div>
+        <button onclick="closeBooking()" style="margin-left:auto;background:var(--bg2);border:1px solid var(--border);border-radius:8px;width:30px;height:30px;cursor:pointer;color:var(--text2);font-size:16px;display:flex;align-items:center;justify-content:center">×</button>
+      </div>
+      <div style="padding:20px 20px 0">
+        <!-- Date selector -->
+        <div style="font-size:10px;color:var(--text3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:12px">Select Date</div>
+        <div id="date-slots" style="display:flex;gap:9px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none"></div>
+
+        <!-- Time slots -->
+        <div style="font-size:10px;color:var(--text3);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px">Available Time Slots</div>
+        <div id="time-slots" style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px"></div>
+
+        <!-- Consultation type -->
+        <div style="font-size:10px;color:var(--text3);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px">Consultation Type</div>
+        <div style="display:flex;gap:9px">
+          <div class="ctype-btn active" onclick="selectCtype(this,'In-Person')">🏥 In-Person</div>
+          <div class="ctype-btn" onclick="selectCtype(this,'Video Call')">📹 Video Call</div>
+        </div>
+
+        <!-- Reason -->
+        <div style="font-size:10px;color:var(--text3);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 10px">Reason for Visit (optional)</div>
+        <textarea id="book-reason" class="form-inp" rows="2" placeholder="e.g. Joint pain, seeking Siddha remedy…" style="resize:none;line-height:1.6;font-family:inherit"></textarea>
+
+        <button id="book-next-btn" onclick="goBookStep2()" style="width:100%;margin-top:18px;padding:14px;border-radius:14px;background:var(--accent2);border:1px solid var(--accent);color:#fff;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;transition:opacity .2s;letter-spacing:.4px;opacity:.45;pointer-events:none">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Confirm -->
+    <div id="book-step2" style="display:none;padding:20px">
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="font-size:13px;color:var(--text3);letter-spacing:.5px;margin-bottom:6px">CONFIRM APPOINTMENT</div>
+        <div style="font-size:22px;font-family:'Cormorant Garamond',serif;font-weight:300;color:var(--text)">Review your booking</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:18px">
+        <div class="conf-row2"><span>Doctor</span><span id="c-doctor" style="color:var(--text);font-weight:500"></span></div>
+        <div class="conf-row2"><span>Clinic</span><span id="c-clinic"></span></div>
+        <div class="conf-row2"><span>Date</span><span id="c-date" style="color:var(--accent)"></span></div>
+        <div class="conf-row2"><span>Time</span><span id="c-time" style="color:var(--accent)"></span></div>
+        <div class="conf-row2"><span>Type</span><span id="c-type"></span></div>
+        <div class="conf-row2" id="c-reason-row"><span>Reason</span><span id="c-reason" style="font-style:italic;max-width:180px;text-align:right"></span></div>
+      </div>
+      <div style="background:var(--glow);border:1px solid var(--border);border-radius:12px;padding:13px 15px;font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:18px">
+        📋 You will receive a confirmation message. Please arrive 10 minutes early for in-person visits.
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onclick="goBookStep1()" style="flex:1;padding:13px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);font-size:13px;cursor:pointer;font-family:inherit">← Back</button>
+        <button onclick="confirmBooking()" style="flex:2;padding:13px;border-radius:12px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;color:#fff;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;letter-spacing:.3px">Confirm Booking ✓</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Success -->
+    <div id="book-step3" style="display:none;padding:28px 20px;text-align:center">
+      <div style="width:72px;height:72px;border-radius:50%;background:var(--glow);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 20px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1)">✓</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;margin-bottom:8px">Appointment Booked!</div>
+      <div style="font-size:13px;color:var(--text3);line-height:1.7;max-width:280px;margin:0 auto 24px">Your appointment with <span id="s-doctor" style="color:var(--accent)"></span> on <span id="s-date" style="color:var(--accent)"></span> at <span id="s-time" style="color:var(--accent)"></span> is confirmed.</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:15px;margin-bottom:24px;text-align:left">
+        <div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Booking Reference</div>
+        <div id="s-ref" style="font-size:18px;font-family:'Cormorant Garamond',serif;color:var(--accent);letter-spacing:2px"></div>
+      </div>
+      <button onclick="closeBooking()" style="width:100%;padding:14px;border-radius:14px;background:var(--accent2);border:1px solid var(--accent);color:#fff;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit">Done</button>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .date-chip{flex-shrink:0;width:58px;text-align:center;padding:10px 6px;border-radius:13px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;transition:all .2s}
+  .date-chip .dc-day{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+  .date-chip .dc-num{font-size:20px;font-family:'Cormorant Garamond',serif;color:var(--text);line-height:1.2}
+  .date-chip .dc-mon{font-size:9px;color:var(--text3)}
+  .date-chip.sel{background:var(--accent2);border-color:var(--accent)}
+  .date-chip.sel .dc-day,.date-chip.sel .dc-num,.date-chip.sel .dc-mon{color:#fff}
+  .time-chip{padding:10px 6px;border-radius:11px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;text-align:center;font-size:13px;color:var(--text2);transition:all .2s}
+  .time-chip:hover{border-color:var(--accent);color:var(--text)}
+  .time-chip.sel{background:var(--accent2);border-color:var(--accent);color:#fff}
+  .time-chip.busy{opacity:.35;pointer-events:none;text-decoration:line-through}
+  .ctype-btn{flex:1;padding:11px;border-radius:11px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;text-align:center;font-size:12px;color:var(--text2);transition:all .2s}
+  .ctype-btn.active{background:var(--accent2);border-color:var(--accent);color:#fff}
+  .conf-row2{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--text3)}
+  .conf-row2:last-child{border-bottom:none}
+  @keyframes popIn{0%{transform:scale(0.5);opacity:0}100%{transform:scale(1);opacity:1}}
+  @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+</style>
+
+<script>
+let lang='en',theme='dark',micOn=false;
+const NO_NAV=['page-landing','page-auth','page-processing'];
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('bnav').style.display=NO_NAV.includes(id)?'none':'flex';
+  applyLang();
+}
+function navTo(pid,nid){
+  showPage(pid);
+  document.querySelectorAll('.nv').forEach(n=>n.classList.remove('active'));
+  document.getElementById(nid).classList.add('active');
+}
+function guestEntry(){navTo('page-dashboard','nav-home');}
+function switchTab(t,el){
+  document.querySelectorAll('.a-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+t).classList.add('active');
+}
+function toggleTheme(){
+  theme=theme==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',theme);
+  document.getElementById('theme-btn').textContent=theme==='dark'?'☽':'☀';
+  const t=document.getElementById('tgl-theme');
+  if(t)t.classList.toggle('on',theme==='dark');
+}
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.classList.toggle('active',(l==='en'&&b.textContent==='EN')||(l==='ta'&&b.textContent==='த'));
+  });
+  const lv=document.getElementById('lang-val');
+  if(lv)lv.textContent=l==='en'?'English':'தமிழ்';
+  applyLang();
+}
+function applyLang(){
+  document.querySelectorAll('[data-en]').forEach(el=>{
+    const v=lang==='ta'?(el.getAttribute('data-ta')||el.getAttribute('data-en')):el.getAttribute('data-en');
+    if(v)el.textContent=v;
+  });
+}
+function handleFile(e){
+  const file=e.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    const img=document.getElementById('prev-img');
+    img.src=ev.target.result;img.style.display='block';
+    document.getElementById('proc-btn').style.display='block';
+    document.getElementById('drop-zone').style.display='none';
+  };
+  r.readAsDataURL(file);
+}
+const steps=[
+  ['Reading Manuscript…','Enhancing contrast and removing noise'],
+  ['Extracting Tamil Text…','Running OCR on palm-leaf script'],
+  ['Matching Diseases…','Searching Siddha knowledge graph'],
+  ['Finalizing Results…','Cross-referencing manuscript database']
+];
+let si=0;
+function startProc(){showPage('page-processing');si=0;runStep();}
+function runStep(){
+  if(si>=steps.length){navTo('page-results','nav-saved');return;}
+  const[t,s]=steps[si];
+  document.getElementById('proc-title').textContent=t;
+  document.getElementById('proc-step').textContent=s;
+  si++;setTimeout(runStep,1200);
+}
+function toggleMic(){
+  micOn=!micOn;
+  const btn=document.getElementById('mbtn'),r1=document.getElementById('mring'),r2=document.getElementById('mring2'),wf=document.getElementById('waveform'),st=document.getElementById('mic-status'),ab=document.getElementById('analyze-btn'),tb=document.getElementById('trans-box');
+  btn.classList.toggle('rec',micOn);r1.classList.toggle('rec',micOn);r2.classList.toggle('rec',micOn);wf.classList.toggle('on',micOn);
+  if(micOn){
+    st.textContent=lang==='ta'?'பதிவு நடக்கிறது… நிறுத்த தட்டவும்':'Recording… tap to stop';
+    btn.textContent='⏹';
+    setTimeout(()=>{
+      if(!micOn)return;
+      tb.textContent=lang==='ta'?'மூட்டு வலி, சோர்வு, பசியின்மை, இரவில் தூக்கமின்மை — கடந்த மூன்று வாரங்களாக உள்ளது.':'Joint pain in both knees, general fatigue, loss of appetite, and difficulty sleeping at night — persisting for about three weeks.';
+      ab.style.opacity='1';ab.style.pointerEvents='auto';
+    },3000);
+  }else{
+    st.textContent=lang==='ta'?'பதிவு நிறைவடைந்தது':'Recording stopped';
+    btn.textContent='🎙️';
+  }
+}
+
+// -------- BOOKING --------
+let bookDoctor={},selectedDate='',selectedTime='',selectedCtype='In-Person';
+
+const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+const TIME_SLOTS=[
+  {t:'9:00 AM',busy:false},{t:'9:30 AM',busy:false},{t:'10:00 AM',busy:true},
+  {t:'10:30 AM',busy:false},{t:'11:00 AM',busy:false},{t:'11:30 AM',busy:true},
+  {t:'2:00 PM',busy:false},{t:'2:30 PM',busy:false},{t:'3:00 PM',busy:false},
+  {t:'3:30 PM',busy:true},{t:'4:00 PM',busy:false},{t:'4:30 PM',busy:false}
+];
+
+function openBooking(name,clinic,av,avail){
+  bookDoctor={name,clinic,av};
+  selectedDate='';selectedTime='';selectedCtype='In-Person';
+  document.getElementById('book-name').textContent=name;
+  document.getElementById('book-clinic').textContent=clinic;
+  document.getElementById('book-av').textContent=av;
+
+  // Build dates (today + 6 days, skip if 'tomorrow' skip today)
+  const ds=document.getElementById('date-slots');ds.innerHTML='';
+  const now=new Date();
+  const startOffset=avail==='tomorrow'?1:0;
+  for(let i=startOffset;i<startOffset+7;i++){
+    const d=new Date(now);d.setDate(now.getDate()+i);
+    const chip=document.createElement('div');chip.className='date-chip';
+    chip.innerHTML=`<div class="dc-day">${DAYS[d.getDay()]}</div><div class="dc-num">${d.getDate()}</div><div class="dc-mon">${MONTHS[d.getMonth()]}</div>`;
+    chip.dataset.label=`${DAYS[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]}`;
+    chip.onclick=()=>selectDate(chip);
+    ds.appendChild(chip);
+  }
+
+  // Build time slots
+  const ts=document.getElementById('time-slots');ts.innerHTML='';
+  TIME_SLOTS.forEach(s=>{
+    const chip=document.createElement('div');
+    chip.className='time-chip'+(s.busy?' busy':'');
+    chip.textContent=s.t+(s.busy?' ✗':'');
+    chip.dataset.t=s.t;
+    chip.onclick=()=>selectTime(chip);
+    ts.appendChild(chip);
+  });
+
+  // Reset steps
+  document.getElementById('book-step1').style.display='block';
+  document.getElementById('book-step2').style.display='none';
+  document.getElementById('book-step3').style.display='none';
+  document.querySelectorAll('.ctype-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  document.getElementById('book-reason').value='';
+  checkNextBtn();
+
+  const overlay=document.getElementById('booking-overlay');
+  const sheet=document.getElementById('booking-sheet');
+  overlay.style.display='block';
+  requestAnimationFrame(()=>{ sheet.style.transform='translateY(0)'; });
+}
+
+function closeBooking(){
+  const sheet=document.getElementById('booking-sheet');
+  sheet.style.transform='translateY(100%)';
+  setTimeout(()=>{ document.getElementById('booking-overlay').style.display='none'; },350);
+}
+function closeBookingOutside(e){if(e.target===document.getElementById('booking-overlay'))closeBooking();}
+
+function selectDate(chip){
+  document.querySelectorAll('.date-chip').forEach(c=>c.classList.remove('sel'));
+  chip.classList.add('sel');
+  selectedDate=chip.dataset.label;
+  checkNextBtn();
+}
+function selectTime(chip){
+  document.querySelectorAll('.time-chip').forEach(c=>c.classList.remove('sel'));
+  chip.classList.add('sel');
+  selectedTime=chip.dataset.t;
+  checkNextBtn();
+}
+function selectCtype(el,type){
+  document.querySelectorAll('.ctype-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  selectedCtype=type;
+}
+function checkNextBtn(){
+  const btn=document.getElementById('book-next-btn');
+  const ok=selectedDate&&selectedTime;
+  btn.style.opacity=ok?'1':'0.45';
+  btn.style.pointerEvents=ok?'auto':'none';
+}
+
+function goBookStep2(){
+  document.getElementById('book-step1').style.display='none';
+  document.getElementById('book-step2').style.display='block';
+  document.getElementById('c-doctor').textContent=bookDoctor.name;
+  document.getElementById('c-clinic').textContent=bookDoctor.clinic;
+  document.getElementById('c-date').textContent=selectedDate;
+  document.getElementById('c-time').textContent=selectedTime;
+  document.getElementById('c-type').textContent=selectedCtype;
+  const reason=document.getElementById('book-reason').value.trim();
+  document.getElementById('c-reason').textContent=reason||'—';
+  document.getElementById('c-reason-row').style.display=reason?'flex':'none';
+}
+function goBookStep1(){
+  document.getElementById('book-step2').style.display='none';
+  document.getElementById('book-step1').style.display='block';
+}
+function confirmBooking(){
+  document.getElementById('book-step2').style.display='none';
+  document.getElementById('book-step3').style.display='block';
+  document.getElementById('s-doctor').textContent=bookDoctor.name;
+  document.getElementById('s-date').textContent=selectedDate;
+  document.getElementById('s-time').textContent=selectedTime;
+  const ref='SL-'+Math.random().toString(36).slice(2,6).toUpperCase()+'-'+new Date().getFullYear();
+  document.getElementById('s-ref').textContent=ref;
+}
+</script>
+</body>
+</html>
